@@ -129,8 +129,8 @@ Napi::Value SampleRateStream::Transform(const Napi::CallbackInfo &info)
         lengthOut = lengthOut * 2;
     }
 
-    float *dataOutFloat = new float[lengthOut];
-    float *dataInFloat = new float[lengthIn];
+    float dataOutFloat[lengthOut];
+    float dataInFloat[lengthIn];
 
     if (fromDepth == 16)
     {
@@ -163,7 +163,7 @@ Napi::Value SampleRateStream::Transform(const Napi::CallbackInfo &info)
         depth = 32;
     }
     lengthOut = data.output_frames_gen * channels * (depth / 8);
-    int *dataOut = new int[lengthOut];
+    int dataOut[lengthOut];
     int inFramesUsed = data.input_frames_used;
     int frameDiff = data.input_frames - data.input_frames_used;
     if (frameDiff != 0)
@@ -184,7 +184,7 @@ Napi::Value SampleRateStream::Transform(const Napi::CallbackInfo &info)
         src_float_to_int_array(dataOutFloat, (int *)dataOut, lengthOut);
     }
 
-    return Napi::Buffer<char>::New(env, (char *)dataOut, lengthOut);
+    return Napi::Buffer<char>::Copy(env, (char *)dataOut, lengthOut);
 }
 
 void SampleRateStream::SetRatio(const Napi::CallbackInfo &info)
